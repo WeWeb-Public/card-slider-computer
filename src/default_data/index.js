@@ -1,6 +1,6 @@
 module.exports = [
     {
-        name: 'card_slider',
+        name: 'card_slider_computer',
         category: 'features',
         storeName: {
             en: "Slider card section",

@@ -4,102 +4,64 @@
 
 <!-- This is your HTML -->
 <template>
-    <div>
+    <div class="card-slider-computer">
         <!-- wwManager:start -->
         <wwSectionEditMenu :sectionCtrl="sectionCtrl" :options="openOptions"></wwSectionEditMenu>
         <!-- wwManager:end -->
-        <wwObject class="background" :ww-object="section.data.bg" ww-category="background"></wwObject>
-        <!--TOP WWOBJS-->
-        <div class="top-ww-objs">
-            <wwLayoutColumn
-                tag="div"
-                ww-default="ww-image"
-                :ww-list="section.data.topWwObjs"
-                class="top-ww-obj"
-                @ww-add="add(section.data.topWwObjs, $event)"
-                @ww-remove="remove(section.data.topWwObjs, $event)"
-            >
-                <wwObject v-for="topWwObj in section.data.topWwObjs" :key="topWwObj.uniqueId" :ww-object="topWwObj"></wwObject>
-            </wwLayoutColumn>
-        </div>
 
-        <div class="container hidden-mobile">
-            <div class="container-center">
-                <div class="thumbnail-container" v-for="(feature, index) in section.data.features" :key="feature.uniqueId" :style="columnWidth">
-                    <!-- wwManager:start -->
-                    <wwContextMenu
-                        tag="div"
-                        class="contextmenu"
-                        v-if="editMode"
-                        @ww-add-before="addFeature(index, 'before')"
-                        @ww-add-after="addFeature(index, 'after')"
-                        @ww-remove="removeFeature(index)"
-                    >
-                        <div class="wwi wwi-config"></div>
-                    </wwContextMenu>
-                    <!-- wwManager:end -->
-                    <wwObject class="background" :ww-object="feature.background" ww-category="background"></wwObject>
-
-                    <wwLayoutColumn tag="div" ww-default="ww-image" :ww-list="feature.contents" class="content" @ww-add="add(feature.contents, $event)" @ww-remove="remove(feature.contents, $event)">
-                        <wwObject tag="div" v-for="content in feature.contents" :key="content.uniqueId" :ww-object="content"></wwObject>
-                    </wwLayoutColumn>
-                </div>
+        <div class="section-container">
+            <wwObject class="background" :ww-object="section.data.bg" ww-category="background"></wwObject>
+            <!--TOP WWOBJS-->
+            <div class="top-ww-objs">
+                <wwLayoutColumn tag="div" ww-default="ww-image" :ww-list="section.data.topWwObjs" class="top-ww-obj" @ww-add="add(section.data.topWwObjs, $event)" @ww-remove="remove(section.data.topWwObjs, $event)">
+                    <wwObject v-for="topWwObj in section.data.topWwObjs" :key="topWwObj.uniqueId" :ww-object="topWwObj"></wwObject>
+                </wwLayoutColumn>
             </div>
-        </div>
+            <div class="full-container">
+                <div class="fade right" v-show="backgroundColor" @click="nextSlide()" :style="{'background': 'linear-gradient(to right, transparent 0%,' + backgroundColor + ' 100%)'}"></div>
+                <div class="fade left" v-show="backgroundColor" @click="prevSlide()" :style="{'background': 'linear-gradient(to right,' + backgroundColor + ' 0%, transparent 100%)'}"></div>
 
-        <v-touch
-            ref="swiper"
-            :enabled="!editMode"
-            @swipeleft="nextSlide()"
-            @swiperight="prevSlide()"
-            :swipe-options="{ direction: 'horizontal', threshold: 10, velocity: 0.2 }"
-            class="container mobile-wrapper"
-        >
-            <div class="container-center" :style="[mobileStyle, mobileTransition]">
-                <div class="thumbnail-container" v-for="feature in section.data.features" :key="feature.uniqueId" :style="cardWidth">
-                    <!-- wwManager:start -->
-                    <wwContextMenu
-                        tag="div"
-                        class="contextmenu contextmenu-center"
-                        v-if="editMode"
-                        @ww-add-before="addFeature(index, 'before')"
-                        @ww-add-after="addFeature(index, 'after')"
-                        @ww-remove="removeFeature(index)"
-                    >
-                        <div class="wwi wwi-config"></div>
-                    </wwContextMenu>
-                    <!-- wwManager:end -->
-                    <wwObject class="background" :ww-object="feature.background" ww-category="background"></wwObject>
-                    <!-- feature -->
-                    <wwLayoutColumn tag="div" ww-default="ww-image" :ww-list="feature.contents" class="content" @ww-add="add(feature.contents, $event)" @ww-remove="remove(feature.contents, $event)">
-                        <wwObject tag="div" v-for="content in feature.contents" :key="content.uniqueId" :ww-object="content"></wwObject>
-                    </wwLayoutColumn>
-                </div>
+                <v-touch ref="swiper" :enabled="!editMode" @swipeleft="nextSlide()" @swiperight="prevSlide()" :swipe-options="{ direction: 'horizontal', threshold: 10, velocity: 0.2 }" class="container">
+                    <div class="container-center" :style="[mobileStyle, mobileTransition]">
+                        <div class="thumbnail-container" v-for="(feature, index) in section.data.features" :key="feature.uniqueId" :style="cardWidth">
+                            <div class="thumbnail">
+                                <!-- wwManager:start -->
+                                <wwContextMenu tag="div" class="contextmenu contextmenu-center" v-if="editMode" :options="featureOptions" @ww-add-before="addFeature(index, 'before')" @ww-add-after="addFeature(index, 'after')" @ww-remove="removeFeature(index)" @ww-select-image="setFeatureImage(index)">
+                                    <div class="wwi wwi-config"></div>
+                                </wwContextMenu>
+                                <!-- wwManager:end -->
+                                <wwObject class="background" :ww-object="feature.background" ww-category="background"></wwObject>
+                                <!-- feature -->
+                                <div class="computer desktop twic" data-background="url(https://cdn.weweb.app/public/images/macbook.png)">
+                                    <div class="website-preview" :class="{scrolling: sliderPosition == index}">
+                                        <div class="preview twic" :data-background="'url(' + feature.preview + ')'"></div>
+                                    </div>
+                                </div>
+                                <div class="computer mobile">
+                                    <div class="website-preview" :class="{scrolling: sliderPosition == index}">
+                                        <div class="preview twic" :data-background="'url(' + feature.preview + ')'"></div>
+                                    </div>
+                                </div>
+                                <wwLayoutColumn tag="div" ww-default="ww-image" :ww-list="feature.contents" class="content" @ww-add="add(feature.contents, $event)" @ww-remove="remove(feature.contents, $event)">
+                                    <wwObject tag="div" v-for="content in feature.contents" :key="content.uniqueId" :ww-object="content"></wwObject>
+                                </wwLayoutColumn>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-dots-wrapper">
+                        <li v-for="(dot, index) in section.data.features" class="content-dot" :style="{'background': ((sliderPosition == index) ? section.data.dotColor : ''), 'border-color': section.data.dotColor}" :key="dot.uniqueId">
+                            <div class="dot" @click="switchToIndex(sliderPosition, index)"></div>
+                        </li>
+                    </div>
+                </v-touch>
             </div>
-            <div class="content-dots-wrapper">
-                <li
-                    v-for="(dot, index) in section.data.features"
-                    class="content-dot"
-                    :style="{'background': ((sliderPosition == index) ? section.data.dotColor : ''), 'border-color': section.data.dotColor}"
-                    :key="dot.uniqueId"
-                >
-                    <div class="dot" @click="switchToIndex(sliderPosition, index)"></div>
-                </li>
-            </div>
-        </v-touch>
 
-        <!--BOTTOM WWOBJS-->
-        <div class="bottom-ww-objs">
-            <wwLayoutColumn
-                tag="div"
-                ww-default="ww-image"
-                :ww-list="section.data.bottomWwObjs"
-                class="top-ww-obj"
-                @ww-add="add(section.data.bottomWwObjs, $event)"
-                @ww-remove="remove(section.data.bottomWwObjs, $event)"
-            >
-                <wwObject v-for="bottomWwObj in section.data.bottomWwObjs" :key="bottomWwObj.uniqueId" :ww-object="bottomWwObj"></wwObject>
-            </wwLayoutColumn>
+            <!--BOTTOM WWOBJS-->
+            <div class="bottom-ww-objs">
+                <wwLayoutColumn tag="div" ww-default="ww-image" :ww-list="section.data.bottomWwObjs" class="top-ww-obj" @ww-add="add(section.data.bottomWwObjs, $event)" @ww-remove="remove(section.data.bottomWwObjs, $event)">
+                    <wwObject v-for="bottomWwObj in section.data.bottomWwObjs" :key="bottomWwObj.uniqueId" :ww-object="bottomWwObj"></wwObject>
+                </wwLayoutColumn>
+            </div>
         </div>
     </div>
 </template>
@@ -111,7 +73,10 @@
 const VueTouch = require('vue-touch')
 
 Vue.use(VueTouch, { name: 'v-touch' })
+
+/* wwManager:start */
 import { getNewFeature } from "./defaultFeature"
+/* wwManager:end */
 
 export default {
     name: "__COMPONENT_NAME__",
@@ -121,9 +86,28 @@ export default {
     },
     data() {
         return {
-            maxThumbnailsPerLine: 4,
-            columnWidth: { 'width': 'calc(33.33% - 30px)' },
             sliderPosition: 0,
+            cardPercent: 100,
+
+            /* wwManager:start */
+
+            featureOptions: {
+                name: {  //Nom du popup, si vide le popup s'appelle 'Menu'
+                    en: 'Card',
+                    fr: 'Carte'
+                },
+                items: [  //Liste des options dans le popup
+                    {
+                        text: {
+                            en: 'Image',
+                            fr: 'Image'
+                        },
+                        icon: 'wwi wwi-image',
+                        action: 'ww-select-image'
+                    }
+                ]
+            },
+            /* wwManager:end */
         }
     },
     computed: {
@@ -140,17 +124,26 @@ export default {
             return this.section.data.features.length
         },
         mobileStyle() {
-            return { 'width': 'calc(' + this.featuresLength + ' * 100%)' }
+
+            return { 'width': (this.featuresLength * this.cardPercent) + '%' }
         },
         mobileTransition() {
-            return { 'transform': 'translate(calc(' + (- this.sliderPosition * (100 / this.featuresLength)) + '% + ' + this.sliderPosition * 32 + 'px ), 0)' }
+            return { 'transform': 'translate(' + (- this.sliderPosition * (100 / this.featuresLength)) + '%, 0)' }
         },
         cardWidth() {
-            return { 'width': 'calc(' + (100 / this.featuresLength) + '% - 50px)' }
+            return { 'width': (100 / this.featuresLength) + '%' }
+        },
+        backgroundColor() {
+            const bg = wwLib.$store.getters["websiteData/getWwObject"](this.section.data.bg.uniqueId);
+            if (bg && bg.content && bg.content.type == 'ww-color') {
+                return bg.content.data.backgroundColor == 'transparent' ? 'white' : bg.content.data.backgroundColor;
+            }
+            return null;
         }
     },
 
     created() {
+
 
         let needUpdate = false
         //Initialize section data
@@ -248,32 +241,12 @@ export default {
         setThumbnailsPerLine() {
             try {
                 let width = window.innerWidth;
-                if (width < 576) {
-                    this.maxThumbnailsPerLine = 1;
-                }
-                else if (width < 992) {
-                    this.maxThumbnailsPerLine = 2;
-                }
-                else if (width < 1200) {
-                    this.maxThumbnailsPerLine = 3;
+
+                if (width < 992) {
+                    this.cardPercent = 90;
                 }
                 else {
-                    this.maxThumbnailsPerLine = 4;
-                }
-
-                switch (Math.min(this.section.data.thumbnailsPerLine, this.maxThumbnailsPerLine)) {
-                    case 1:
-                        this.columnWidth = { 'width': "calc(100% - 30px)" };
-                        break;
-                    case 2:
-                        this.columnWidth = { 'width': "calc(50% - 30px)" };
-                        break;
-                    case 3:
-                        this.columnWidth = { 'width': "calc(33.3333% - 30px)" };
-                        break;
-                    default:
-                        this.columnWidth = { 'width': "calc(25% - 30px)" };
-                        break;
+                    this.cardPercent = 70;
                 }
             } catch (error) {
                 wwLib.wwLog.error('ERROR : ', error);
@@ -318,7 +291,6 @@ export default {
         },
 
         /* add picture */
-
         addElement(list, _index, where) {
             try {
                 const up = (where == 'after') ? parseInt(1) : 0;
@@ -349,26 +321,12 @@ export default {
 
                 wwLib.wwPopups.addStory('WWSLIDER_CUSTOM', {
                     title: {
-                        en: 'Fill in code',
-                        fr: 'Inserer le code'
+                        en: 'Dots options',
+                        fr: 'Options des points de navigations'
                     },
                     type: 'wwPopupForm',
                     storyData: {
                         fields: [
-                            {
-                                label: {
-                                    en: 'Column per line',
-                                    fr: 'Nombre de colonnes par ligne :'
-                                },
-                                type: 'text',
-                                key: 'columnPerLine',
-                                valueData: 'section.data.thumbnailsPerLine',
-                                desc: {
-                                    en: 'The number of column per line',
-                                    fr: 'Le nombre de colonnes par ligne'
-                                }
-
-                            },
                             {
                                 label: {
                                     en: 'Navigation dots color:',
@@ -398,7 +356,6 @@ export default {
                 let options = {
                     firstPage: 'WWSLIDER_CUSTOM',
                     data: {
-                        columnPerLine: this.section.data.thumbnailsPerLine,
                         section: this.section,
 
                     },
@@ -408,11 +365,6 @@ export default {
                 if (typeof (result) != 'undefined') {
                     if (typeof (result.dotsColor) != 'undefined') {
                         this.section.data.dotColor = result.dotsColor
-                    }
-                    if (result.columnPerLine) {
-                        this.section.data.thumbnailsPerLine = result.columnPerLine;
-                        this.sectionCtrl.update(this.section);
-                        this.setThumbnailsPerLine();
                     }
                     this.sectionCtrl.update(this.section);
                 }
@@ -431,6 +383,29 @@ export default {
 
         },
 
+        async setFeatureImage(index) {
+            try {
+                let options = {
+                    firstPage: 'IMAGE_SELECT'
+                }
+
+                const result = await wwLib.wwPopups.open(options)
+
+                if (!result) {
+                    return;
+                }
+                if (typeof (result.image) != 'undefined') {
+                    this.section.data.features[index].preview = result.image;
+                }
+
+                this.sectionCtrl.update(this.section);
+            }
+            catch (error) {
+                console.log(error);
+            }
+
+        }
+
         /* wwManager:end */
 
 
@@ -443,6 +418,18 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <!-- Add lang="scss" or others to use computed CSS -->
 <style lang='scss' scoped>
+.section-container {
+    margin: 0 10px;
+    width: calc(100% - 20px);
+    overflow-x: hidden;
+    position: relative;
+
+    @media (min-width: 992px) {
+        margin: 0 20px;
+        width: calc(100% - 40px);
+    }
+}
+
 .background {
     position: absolute;
     top: 0;
@@ -460,89 +447,204 @@ export default {
     }
 }
 
-.container {
+.full-container {
     position: relative;
-    @media (min-width: 768px) {
-        width: 80%;
-    }
 
-    @media (min-width: 1200px) {
-        width: 90%;
-    }
-    .container-center {
-        display: flex;
-        transition: transform 0.5s ease;
-        @media (min-width: 1024px) {
-            justify-content: center;
-            flex-wrap: wrap;
+    .fade {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100px;
+        z-index: 1;
+        display: none;
+        cursor: pointer;
+        pointer-events: all;
+        transform: translateZ(0);
+        &.right {
+            right: 0;
         }
-        .thumbnail-container {
-            width: 30%;
-            position: relative;
-            margin: 30px 0 30px 15px;
-            background-color: white;
-            min-height: 50px;
-            box-shadow: 0 10px 40px 0 rgba(113, 124, 137, 0.2);
-            border-radius: 7px;
-            overflow: hidden;
-            transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
-            .forehead-banner {
-                position: relative;
-            }
-            .background {
-                border-radius: 7px;
-                overflow: hidden;
-            }
-            .team-pic-container {
-                margin-top: -50px;
-                display: flex;
-                flex-direction: row;
-                justify-content: flex-start;
-                align-items: center;
-                .team-pic {
-                    width: 90px;
-                    height: 90px;
-                }
-                .team-pic:first-child {
-                    margin-left: 15px;
-                }
-                .team-pic:last-child {
-                    margin-right: 15px;
-                }
-                .team-pic:not(:first-child) {
-                    margin-left: -20px;
-                }
-            }
+        &.left {
+            left: 0;
+        }
 
-            .content {
-                position: relative;
-            }
-            /* wwManager:start */
+        @media (min-width: 992px) {
+            display: block;
+        }
+    }
 
-            .contextmenu {
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 30px;
-                height: 30px;
-                color: white;
-                background-color: #ef811a;
-                border-radius: 100%;
+    .container {
+        position: relative;
+        pointer-events: all;
+        @media (min-width: 768px) {
+            width: 80%;
+        }
+
+        @media (min-width: 992px) {
+            width: 90%;
+        }
+
+        .container-center {
+            display: flex;
+            transition: transform 0.5s ease;
+            margin-left: 5%;
+            @media (min-width: 1024px) {
+                justify-content: center;
+            }
+            @media (min-width: 992px) {
+                margin-left: 15%;
+            }
+            .thumbnail-container {
+                width: 30%;
+                position: relative;
+                margin: 30px 0 30px 0px;
+                min-height: 50px;
+                transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
                 display: flex;
                 justify-content: center;
-                align-items: center;
-                font-size: 1.2rem;
-                cursor: pointer;
-                z-index: 2;
+
+                .thumbnail {
+                    $computer-width: 180%;
+
+                    height: 100%;
+                    width: 95%;
+                    position: relative;
+
+                    @media (min-width: 992px) {
+                        width: 350px;
+                    }
+                    @media (min-width: 1200px) {
+                        width: 400px;
+                    }
+
+                    .computer {
+                        &.desktop {
+                            position: absolute;
+                            top: -15px;
+                            left: 50%;
+                            transform: translate(-50%, 0);
+                            width: $computer-width;
+                            padding-bottom: $computer-width * 0.581;
+                            background-size: contain;
+                            background-repeat: no-repeat;
+                            display: none;
+
+                            @media (min-width: 992px) {
+                                display: block;
+                            }
+
+                            .website-preview {
+                                position: absolute;
+                                top: 4%;
+                                left: 50%;
+                                transform: translate(-50%, 0);
+                                width: 76%;
+                                padding-bottom: 48.26%;
+                                overflow: hidden;
+
+                                .preview {
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    background-size: 100% auto;
+                                    background-repeat: no-repeat;
+                                }
+
+                                &.scrolling {
+                                    .preview {
+                                        animation-name: scroll-website;
+                                        animation-duration: 10s;
+                                        animation-iteration-count: infinite;
+                                    }
+                                }
+                            }
+                        }
+
+                        &.mobile {
+                            width: 100%;
+
+                            @media (min-width: 992px) {
+                                display: none;
+                            }
+
+                            .website-preview {
+                                width: calc(100% - 20px);
+                                margin-left: 10px;
+                                margin-top: 10px;
+                                padding-bottom: 58.26%;
+                                overflow: hidden;
+                                position: relative;
+
+                                .preview {
+                                    position: absolute;
+                                    top: 0;
+                                    left: 0;
+                                    width: 100%;
+                                    height: 100%;
+                                    background-size: 100% auto;
+                                    background-repeat: no-repeat;
+                                }
+
+                                &.scrolling {
+                                    .preview {
+                                        animation-name: scroll-website;
+                                        animation-duration: 10s;
+                                        animation-iteration-count: infinite;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    .background {
+                        border-radius: 7px;
+                    }
+
+                    .content {
+                        position: relative;
+
+                        @media (min-width: 992px) {
+                            padding-top: $computer-width * 0.581;
+                        }
+                    }
+                }
+                /* wwManager:start */
+
+                .contextmenu {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 30px;
+                    height: 30px;
+                    color: white;
+                    background-color: #ef811a;
+                    border-radius: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 1.2rem;
+                    cursor: pointer;
+                    z-index: 2;
+                }
+                .contextmenu-center {
+                    left: calc(50% - 15px);
+                }
+                /* wwManager:end */
             }
-            .contextmenu-center {
-                left: calc(50% - 15px);
-            }
-            /* wwManager:end */
         }
-        .thumbnail-container:first-child {
-            margin-left: 25px;
-        }
+    }
+}
+
+@keyframes scroll-website {
+    0% {
+        background-position-y: 0%;
+    }
+    10% {
+        background-position-y: 0%;
+    }
+    100% {
+        background-position-y: 100%;
     }
 }
 
@@ -565,19 +667,6 @@ export default {
             height: 15px;
             pointer-events: all;
         }
-    }
-}
-.hidden-mobile {
-    display: none;
-    @media (min-width: 1024px) {
-        display: block;
-    }
-}
-.mobile-wrapper {
-    display: block;
-    position: relative;
-    @media (min-width: 1024px) {
-        display: none;
     }
 }
 </style>
