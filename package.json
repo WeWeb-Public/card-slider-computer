@@ -1,0 +1,27 @@
+{
+    "name": "card-slider-computer",
+    "type": "section",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/WeWeb-Public/card-slider-computer.git"
+    },
+    "version": "0.0.5",
+    "private": true,
+    "scripts": {
+        "build": "weweb-build",
+        "serve": "weweb-serve",
+        "upload": "weweb-upload"
+    },
+    "dependencies": {
+        "vue": "^2.5.16",
+        "vue-touch": "^2.0.0-beta.4"
+    },
+    "devDependencies": {
+        "weweb-client": "^1.0.37"
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions",
+        "not ie <= 8"
+    ]
+}
