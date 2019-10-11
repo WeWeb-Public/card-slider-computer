@@ -422,6 +422,7 @@ export default {
     margin: 0 10px;
     width: calc(100% - 20px);
     overflow-x: hidden;
+    overflow-y: hidden;
     position: relative;
 
     @media (min-width: 992px) {
